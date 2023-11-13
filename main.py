@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 # a path to the file containing a list of valid words in separate lines
 # for Polish: https://sjp.pl/sl/growy/
-DICT_PATH = r"C:\Users\piotr\Desktop\sjp-20230709\slowa.txt"
+DICT_PATH = r"C:\Users\piotr\Desktop\sjp-20231112\slowa.txt"
 WORD_LEN = 5
 
 
@@ -13,29 +13,29 @@ def load_wordlist(dict_path, word_length):
         for line in file:
             word = line.strip()
             if len(word) == word_length:
-                wordlist.append(word)
+                wordlist.append(word.lower())
     return wordlist
 
 
 @dataclass
 class LetterRule:
     letter_index: int
+    green: str
     yellow: [str]
-    green: [str]
     grey: [str]
 
     def __init__(self, index, letter_results):
         self.letter_index = index
-        self.yellow = []
-        self.green = []
-        self.grey = []
+        self.green = ""
+        self.yellow = set()
+        self.grey = set()
         for letter, result in letter_results:
             if result == '-':
-                self.grey.append(letter)
-            if result == 'Y':
-                self.yellow.append(letter)
-            if result == 'G':
-                self.green.append(letter)
+                self.grey.add(letter)
+            if result == 'y':
+                self.yellow.add(letter)
+            if result == 'g':
+                self.green = letter
 
 
 def get_possible():
@@ -50,31 +50,50 @@ def get_letter_rules(guesses):
     return letter_stats
 
 
-def yellows_in_word(yellows, word):
-    return any(letter in word for letter in yellows)
+def contains_but_elsewhere(letters, word, position):
+    """
+    Returns whether a word contains all the listed letters, but not on a position [ind].
+    :param letters: letters the word has to contain
+    :param word: word under testing
+    :param position: position of the letter that is other than all the listed
+    :return: True if the word contains all the letters, False otherwise.
+    """
+    if not all(letter in word for letter in letters):
+        return False
+    else:
+        return all(word[position] != letter for letter in letters)
+
+
+def contains_exactly(letter, word, position):
+    return word[position] == letter
+
+
+def not_contain(letters, word):
+    return not set(letters).intersection(set(word))
 
 
 def apply_letter_rule(wordlist, letter_rule):
     ind = letter_rule.letter_index
     valid = wordlist
-    if greens := letter_rule.green:
-        valid = [word for word in valid if word[ind] in greens]
-    if greys := letter_rule.grey:
-        valid = [word for word in valid if word[ind] not in greys]
+    if green := letter_rule.green:
+        valid = [word for word in valid if contains_exactly(green, word, ind)]
     if yellows := letter_rule.yellow:
-        valid = [word for word in valid if yellows_in_word(yellows, word)]
+        valid = [word for word in valid if contains_but_elsewhere(yellows, word, ind)]
+    if greys := letter_rule.grey:
+        valid = [word for word in valid if not_contain(greys, word)]
+
     return valid
 
 
 if __name__ == '__main__':
     words = load_wordlist(DICT_PATH, word_length=WORD_LEN)
-    print(len(words))
 
     bets = [
-        ('polka', '-y---'),
-        ('stryj', '-----'),
-        ('budzi', '---y-'),
-        ('człon', '-yyy-'),
+        ('polka', 'g----'),
+        ('piech', 'g----'),
+        ('budzę', '-----'),
+        ('grywa', '-----'),
+        ('stąpa', '---y-'),
     ]
 
     letter_rules = get_letter_rules(bets)
@@ -84,7 +103,4 @@ if __name__ == '__main__':
 
     for w in words:
         print(w)
-    print(words)
-
-
-
+    dbg_stp = 5
