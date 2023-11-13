@@ -2,16 +2,20 @@ from dataclasses import dataclass
 from random import choice
 
 
+from slowoku.charcoder import CharCoder
+
+
 class Slowoku:
-    all_words = []
     bets = []
     letter_rules = []
     valid_words = []
     secret_word = None
 
     def __init__(self, dictionary_path, word_length, cheat_mode=False):
+        self.dictionary_path = dictionary_path
         self.word_length = word_length
-        self.all_words = Slowoku.load_wordlist(dictionary_path, word_length)
+        self.char_coder = CharCoder()
+        self.all_words = self.load_wordlist(dictionary_path, word_length)
         self.cheat_mode = cheat_mode
         self.reset()
         print(f"Starting with {len(self.valid_words)} words.")
@@ -22,14 +26,13 @@ class Slowoku:
         self.valid_words = [word for word in self.all_words]
         self.secret_word = choice(self.valid_words) if not self.cheat_mode else None
 
-    @staticmethod
-    def load_wordlist(dict_path, word_length):
+    def load_wordlist(self, dict_path, word_length):
         wordlist = []
         with open(dict_path, encoding='utf-8') as file:
             for line in file:
                 word = line.strip()
                 if len(word) == word_length:
-                    wordlist.append(word.lower())
+                    wordlist.append(self.char_coder.encode(word))
         return wordlist
 
     @dataclass
@@ -52,7 +55,7 @@ class Slowoku:
                 if result == 'g':
                     self.green = letter
 
-    def get_letter_rules(self):
+    def evaluate_letter_rules(self):
         letter_stats = []
         for i in range(self.word_length):
             letter_results = [(word[i], response[i]) for word, response in self.bets]
@@ -105,9 +108,10 @@ class Slowoku:
         ('stąpa', '---y-'),
         """
         if not result:
-            result = self.get_result(word)
+            result = self.evaluate_result(word)
+            print(result)
         self.bets.append((word, result))
-        self.letter_rules = self.get_letter_rules()
+        self.letter_rules = self.evaluate_letter_rules()
         wc_initial = len(self.valid_words)
         for let_rul in self.letter_rules:
             self.valid_words = self.apply_letter_rule(self.valid_words, let_rul)
@@ -115,11 +119,10 @@ class Slowoku:
         print(f"Information gain: {wc_initial/wc_final - 1:.2f}, [{wc_final} left]")
         if print_words:
             for vw in self.valid_words:
-                print(vw)
+                print(self.char_coder.encode(vw))
 
-    def get_result(self, word):
+    def evaluate_result(self, word):
         repeating = set(self.secret_word).intersection(set(word))
-        # no_occurence = set(self.secret_word).difference(set(word))
         outputs = []
         for ind, letter in enumerate(word):
             if letter in repeating:

@@ -14,9 +14,13 @@ def best_initial_word_experiment(dictionary_path, word_length):
 
 
 if __name__ == '__main__':
-    game = Slowoku(DICT_PATH, WORD_LEN, cheat_mode=True)
-    game.bet('polska', '-gg-yy')
-    game.bet('kolano', 'gggg--')
+    game = Slowoku(DICT_PATH, WORD_LEN)
+    word = 'żółcią'
+    # game.bet('polska')
+
+
+    # game.bet('polska', '-gg-yy')
+    # game.bet('kolano', 'gggg--')
 
     # game.bet('polska', '-----y')
     # game.bet('budzić', '---y-g')
