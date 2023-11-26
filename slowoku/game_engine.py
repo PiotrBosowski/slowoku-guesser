@@ -4,7 +4,7 @@ The Engine is a module that takes two words:
 - actual secret,
 and returns the actual colorful hint for the player to know, which letters
 are in correct positions (green), which letters are on incorrect positions
-(yellow), and which letters are incorrect (grey).
+(yellow), and which letters are incorrect (black).
 
 This module need to reproduce the color assignment policy used on the Kurnik
 website in order to constitute a nice cheat-engine backend.
@@ -14,7 +14,7 @@ It's stateless design allows for diverse usage.
 import numpy as np
 
 
-class Engine:
+class GameEngine:
     HUMAN_REPR = {0: '-',
                   1: 'y',
                   2: 'g'}
@@ -22,7 +22,7 @@ class Engine:
     def get_color_hint(self,
                        guess: np.ndarray,
                        secret: np.ndarray,
-                       human_reable: bool = False):
+                       return_human_readable: bool = False):
         """
         This function returns a hint about the guess given the secret word.
         The rules are as follows:
@@ -34,13 +34,13 @@ class Engine:
           returned at the position i (exception from this rule is explained
           below).
         - if the letter at position i in the guess is not present in the secret
-          at all, a value of 0 ('-' - grey) is returned at position i.
+          at all, a value of 0 ('-' - black) is returned at position i.
 
         The exception from the second rule:
           If there is one occurance of letter X in the secret, but in the guess
           there are two positions at which X occurs (both positions different
           than the one in the secret), only leftmost one will be gratified with
-          1 (yellow) in the response, and the other one will remain 0 (grey).
+          1 (yellow) in the response, and the other one will remain 0 (black).
           In the general case, if the secret contains N such letters X, then in
           the response only up to N occurances of the letter X in the guess
           will be gratified with 1.
@@ -65,8 +65,8 @@ class Engine:
 
         :param guess: players guess (encoded)
         :param secret: secret word (encoded)
-        :param human_reable: flag whether the output should be encoded or
-          human-readable
+        :param return_human_readable: flag whether the output should be encoded
+          or encoded + human-readable
         :return: hint regarding which letters are correct and which are on
           correct positions (encoded or in human readable format, depending
           on the above flag)
@@ -83,5 +83,6 @@ class Engine:
             occurrences = np.argwhere(guess * ~greens == letter)[:count]
             yellows[occurrences] = True
         output = np.zeros_like(greens) + yellows + 2 * greens
-        return ''.join(self.HUMAN_REPR[c] for c in output) \
-            if human_reable else output
+        if return_human_readable:
+            output = (output, ''.join(self.HUMAN_REPR[c] for c in output))
+        return output
