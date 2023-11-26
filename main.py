@@ -15,14 +15,12 @@ def best_initial_word_experiment(dictionary_path, word_length):
 
 
 if __name__ == '__main__':
-    game = Slowoku(DICT_PATH, WORD_LEN, cheat_mode=True)
-    game.bet('polska', '-gg-yy')
-    game.bet('kolano', 'gggg--')
-
-    # game.bet('polska', '-----y')
-    # game.bet('budzić', '---y-g')
-    # game.bet('zjawić', 'y-yy-g')
-    # game.bet('korków', '-----y', print_words=True)
-    # game = Slowoku(DICT_PATH, WORD_LEN)
-    # game.bet('korków')
+    g = Slowoku(DICT_PATH, WORD_LEN)
+    g.bet('wbiata')
     dbg_stp = 5
+
+
+    # smarki
+    # sensei
+    # lżejsi
+    # odlesi
