@@ -9,26 +9,21 @@ from slowoku.game_engine import GameEngine
 
 class Slowoku:
     secret_word = None
+    c_engine: CheatEngine
 
-    def __init__(self, dictionary_path, word_length):
-        self.dictionary_path = dictionary_path
-        self.word_length = word_length
+    def __init__(self, wordlist, verbose=True):
+        self.verbose = verbose
         self.char_coder = CharCoder()
-        self.all_words = self.load_wordlist(dictionary_path, word_length)
         self.g_engine = GameEngine()
-        self.c_engine = CheatEngine(self.all_words)
-        # self.secret_word = choice(self.all_words)
-        self.secret_word = self.char_coder.encode('dolesi')
-        print(f"Starting Słowoku with {len(self.all_words)} words.")
+        self.wordlist = np.stack([self.char_coder.encode(word)
+                                  for word in wordlist])
+        self.restart()
 
-    def load_wordlist(self, dict_path, word_length):
-        wordlist = []
-        with open(dict_path, encoding='utf-8') as file:
-            for line in file:
-                word = line.strip()
-                if len(word) == word_length:
-                    wordlist.append(self.char_coder.encode(word))
-        return np.stack(wordlist)
+    def restart(self):
+        self.c_engine = CheatEngine(self.wordlist)
+        self.secret_word = choice(self.wordlist)
+        if self.verbose:
+            print(f"Starting Słowoku with {len(self.wordlist)} words.")
 
     def help(self):
         for word in self.c_engine.valid_words:
@@ -45,6 +40,9 @@ class Slowoku:
         init_wc = len(self.c_engine.valid_words)
         self.c_engine.eliminate(word, result)
         post_wc = len(self.c_engine.valid_words)
-        cheat_output = (f"info. gain: {(init_wc - post_wc) / post_wc:.3f}"
+        info_gain = (init_wc - post_wc) / post_wc
+        cheat_output = (f"information gain: {info_gain:.3f}"
                         f" | {init_wc}->{post_wc}")
-        print(f"{output} [{cheat_output}]")
+        if self.verbose:
+            print(f"{output} [{cheat_output}]")
+        return info_gain
