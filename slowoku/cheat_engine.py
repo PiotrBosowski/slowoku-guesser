@@ -31,7 +31,7 @@ class CheatEngine:
                                     axis=1) >= threshold
             self.valid_words = self.valid_words[yellow_ok_mask]
             # now also delete these words where y_letter is on its position:
-            yellow_2nd_mask = np.any((self.valid_words != guess)
+            yellow_2nd_mask = np.all((self.valid_words != guess)
                                      [:, result == 1], axis=1)
             self.valid_words = self.valid_words[yellow_2nd_mask]
         # apply black:
