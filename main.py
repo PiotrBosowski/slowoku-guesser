@@ -2,6 +2,8 @@ from tqdm import tqdm
 
 import pandas as pd
 
+from timeit import timeit
+
 from slowoku import Slowoku
 from slowoku.data_loading import load_wordlist
 
@@ -17,7 +19,7 @@ WORD_LEN = 6
 def best_initial_word_experiment(dictionary_path,
                                  word_length,
                                  games_to_average=100):
-    wordlist = load_wordlist(dictionary_path, word_length)[:]
+    wordlist = load_wordlist(dictionary_path, word_length)
     word_scores = dict.fromkeys(wordlist)
     game = Slowoku(wordlist, verbose=False)
     results = {}
@@ -31,20 +33,30 @@ def best_initial_word_experiment(dictionary_path,
 
 
 if __name__ == '__main__':
+
+    # timeit(lambda: best_initial_word_experiment(DICT_PATH, WORD_LEN))
+    # old implementation (dictionary copy): 1.35 items/s
+    # new implementation (numpy mask reset only): 1.05 items/s !!!
+    wordlist = load_wordlist(DICT_PATH, WORD_LEN)
+    game = Slowoku(wordlist)
+    game.bet("budzić")
+    dbg_stp = 5
+
+    #
     # word_scores = best_initial_word_experiment(DICT_PATH, WORD_LEN)
     # data = pd.DataFrame(word_scores)
     # score_list = sorted(list(word_scores.items()), key=lambda item: item[1])
     # for word, score in score_list[-25:]:
     #     print(f"{word}, score: {score:.4f}")
-
-    wordlist = load_wordlist(DICT_PATH, word_length=9)
-    game = Slowoku(wordlist)
-    game.bet("rywalizuj")
-    game.bet("rywalizuj")
-    game.bet("rywalizuj")
-    dbg_stp = 5
-    # g = Slowoku(wordlist)
-    # g.bet('wbiata')
+    #
+    # wordlist = load_wordlist(DICT_PATH, word_length=6)
+    # game = Slowoku(wordlist)
+    # game.bet("polska", '--gg--')
+    # game.bet("rywalizuj")
+    # game.bet("rywalizuj")
+    # dbg_stp = 5
+    # # g = Slowoku(wordlist)
+    # # g.bet('wbiata')
 
     """
 game.bet("rywalizuj")

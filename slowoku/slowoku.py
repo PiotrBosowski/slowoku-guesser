@@ -21,25 +21,27 @@ class Slowoku:
 
     def restart(self):
         self.c_engine = CheatEngine(self.wordlist)
-        # self.secret_word = choice(self.wordlist)
-        self.secret_word = self.char_coder.encode("przyśnień")
+        self.secret_word = choice(self.wordlist)
         if self.verbose:
             print(f"Starting Słowoku with {len(self.wordlist)} words.")
 
     def help(self):
-        for word in self.c_engine.valid_words:
+        for word in self.c_engine.wordlist[self.c_engine.valid_mask]:
             word = self.char_coder.decode(word)
             print(word)
 
-    def bet(self, word):
+    def bet(self, word, result_hmn=None):
         word = self.char_coder.encode(word)
-        result, result_hmn = self.g_engine.get_color_hint(
-            word,
-            self.secret_word,
-            return_human_readable=True)
-        init_wc = len(self.c_engine.valid_words)
+        if not result_hmn:
+            result, result_hmn = self.g_engine.get_color_hint(
+                word,
+                self.secret_word,
+                return_human_readable=True)
+        else:
+            result = self.g_engine.encode_result(result_hmn)
+        init_wc = len(self.c_engine.valid_mask == True)
         self.c_engine.eliminate(word, result)
-        post_wc = len(self.c_engine.valid_words)
+        post_wc = len(self.c_engine.valid_mask == True)
         info_gain = (init_wc - post_wc) / post_wc
         if self.verbose:
             output = f"{self.char_coder.decode(word)}\n{result_hmn}"

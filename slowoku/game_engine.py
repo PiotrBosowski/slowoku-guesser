@@ -84,5 +84,12 @@ class GameEngine:
             yellows[occurrences] = True
         output = np.zeros_like(greens) + yellows + 2 * greens
         if return_human_readable:
-            output = (output, ''.join(self.HUMAN_REPR[c] for c in output))
+            output = (output, self.decode_result(output))
         return output
+
+    def decode_result(self, result):
+        return ''.join(self.HUMAN_REPR[c] for c in result)
+
+    def encode_result(self, result_hmn):
+        inverse_map = {value: key for key, value in self.HUMAN_REPR.items()}
+        return np.array([inverse_map[c] for c in result_hmn], dtype=np.int8)
