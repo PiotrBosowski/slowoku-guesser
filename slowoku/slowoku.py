@@ -26,7 +26,7 @@ class Slowoku:
             print(f"Starting Słowoku with {len(self.wordlist)} words.")
 
     def help(self):
-        for word in self.c_engine.wordlist[self.c_engine.valid_mask]:
+        for word in self.c_engine.wordlist[self.c_engine.val_mask]:
             word = self.char_coder.decode(word)
             print(word)
 
@@ -39,9 +39,9 @@ class Slowoku:
                 return_human_readable=True)
         else:
             result = self.g_engine.encode_result(result_hmn)
-        init_wc = len(self.c_engine.valid_mask == True)
+        init_wc = self.c_engine.val_mask.sum()
         self.c_engine.eliminate(word, result)
-        post_wc = len(self.c_engine.valid_mask == True)
+        post_wc = self.c_engine.val_mask.sum()
         info_gain = (init_wc - post_wc) / post_wc
         if self.verbose:
             output = f"{self.char_coder.decode(word)}\n{result_hmn}"
