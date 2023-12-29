@@ -19,6 +19,10 @@ WORD_LEN = 6
 def best_initial_word_experiment(dictionary_path,
                                  word_length,
                                  games_to_average=100):
+    """
+    This is a basic slowoku-based experiment, which aims to produce the best
+    initial word for the game. It can be treated as a workload for benchmarks.
+    """
     wordlist = load_wordlist(dictionary_path, word_length)
     word_scores = dict.fromkeys(wordlist)
     game = Slowoku(wordlist, verbose=False)
@@ -34,7 +38,7 @@ def best_initial_word_experiment(dictionary_path,
 
 if __name__ == '__main__':
 
-    # timeit(lambda: best_initial_word_experiment(DICT_PATH, WORD_LEN))
+    best_initial_word_experiment(DICT_PATH, WORD_LEN)
     # old implementation (dictionary copy): 1.35 items/s
     # new implementation (numpy mask reset only): 1.05 items/s !!!
     wordlist = load_wordlist(DICT_PATH, WORD_LEN)
@@ -42,46 +46,3 @@ if __name__ == '__main__':
     # game.secret_word = game.wordlist[7]
     game.bet("kreska")
     dbg_stp = 5
-
-    #
-    # word_scores = best_initial_word_experiment(DICT_PATH, WORD_LEN)
-    # data = pd.DataFrame(word_scores)
-    # score_list = sorted(list(word_scores.items()), key=lambda item: item[1])
-    # for word, score in score_list[-25:]:
-    #     print(f"{word}, score: {score:.4f}")
-    #
-    # wordlist = load_wordlist(DICT_PATH, word_length=6)
-    # game = Slowoku(wordlist)
-    # game.bet("polska", '--gg--')
-    # game.bet("rywalizuj")
-    # game.bet("rywalizuj")
-    # dbg_stp = 5
-    # # g = Slowoku(wordlist)
-    # # g.bet('wbiata')
-
-    """
-game.bet("rywalizuj")
-rywalizuj
-yy---yy-- [information gain: 11.407 | 335->27]
-11.407407407407407
-game.bet("milioners")
-milioners
--y---gyy- [information gain: 2.000 | 27->9]
-2.0
-game.help()
-przednicy
-przegniły
-prześniły
-przygnieć
-przygniłe
-przyśnień
-rdzennicy <- R shouldn't be on first position
-trzebnicy
-trześnicy
-
-    """
-
-    # smarki
-    # sensei
-    # lżejsi
-    # odlesi
