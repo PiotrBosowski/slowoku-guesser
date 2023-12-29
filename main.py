@@ -39,7 +39,8 @@ if __name__ == '__main__':
     # new implementation (numpy mask reset only): 1.05 items/s !!!
     wordlist = load_wordlist(DICT_PATH, WORD_LEN)
     game = Slowoku(wordlist)
-    game.bet("budzić")
+    # game.secret_word = game.wordlist[7]
+    game.bet("kreska")
     dbg_stp = 5
 
     #
