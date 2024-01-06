@@ -1,9 +1,5 @@
 from tqdm import tqdm
 
-import pandas as pd
-
-from timeit import timeit
-
 from slowoku import Slowoku
 from slowoku.data_loading import load_wordlist
 
@@ -38,7 +34,7 @@ def best_initial_word_experiment(dictionary_path,
 
 if __name__ == '__main__':
 
-    best_initial_word_experiment(DICT_PATH, WORD_LEN)
+    # best_initial_word_experiment(DICT_PATH, WORD_LEN)
     # old implementation (dictionary copy): 1.35 items/s
     # new implementation (numpy mask reset only): 1.05 items/s !!!
     wordlist = load_wordlist(DICT_PATH, WORD_LEN)
