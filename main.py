@@ -1,9 +1,5 @@
 from tqdm import tqdm
 
-import pandas as pd
-
-from timeit import timeit
-
 from slowoku import Slowoku
 from slowoku.data_loading import load_wordlist
 
