@@ -19,6 +19,9 @@ class Slowoku:
                                   for word in wordlist])
         self.restart()
 
+    # def single_game(self):
+
+
     def restart(self):
         self.c_engine = CheatEngine(self.wordlist)
         self.secret_word = choice(self.wordlist)
@@ -26,9 +29,11 @@ class Slowoku:
             print(f"Starting Słowoku with {len(self.wordlist)} words.")
 
     def help(self):
-        for word in self.c_engine.wordlist[self.c_engine.val_mask]:
+        valid_words = self.c_engine.wordlist[self.c_engine.val_mask]
+        for word in valid_words:
             word = self.char_coder.decode(word)
             print(word)
+        return len(valid_words)
 
     def bet(self, word, result_hmn=None):
         word = self.char_coder.encode(word)
